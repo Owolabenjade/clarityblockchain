@@ -48,7 +48,7 @@
       (already-claimed (var-get total-claimed))
     )
     ;; Calculate the claimable amount by subtracting already claimed tokens
-    (ok (uint-sub vested already-claimed))
+    (ok (- vested already-claimed))
   )
 )
 
@@ -65,7 +65,7 @@
     ;; Transfer the claimable amount to the recipient
     (begin
       (stx-transfer? claimable tx-sender)
-      (var-set total-claimed (uint-add (var-get total-claimed) claimable))
+      (var-set total-claimed (+ (var-get total-claimed) claimable))
       (print (tuple (event "claimed") (amount claimable)))
       (ok claimable)
     )
