@@ -16,8 +16,6 @@
     ;; Ensure valid input parameters
     (asserts! (> vesting-amount u0) (err u104))
     (asserts! (> vesting-duration u0) (err u105))
-    ;; Ensure the beneficiary is a valid principal
-    (asserts! (is-eq (principal-of beneficiary) beneficiary) (err u106))
     ;; Set the recipient, total vested amount, and duration
     (var-set recipient (some beneficiary))
     (var-set total-vested vesting-amount)
