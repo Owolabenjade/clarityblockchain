@@ -35,7 +35,7 @@
     )
     ;; Calculate the vested amount based on time passed
     (if (< elapsed-time vesting-period)
-        (unwrap-panic (uint-div (uint-mul amount-vested elapsed-time) vesting-period))
+        (/ (* amount-vested elapsed-time) vesting-period)
         amount-vested
     )
   )
