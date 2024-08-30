@@ -5,7 +5,7 @@
 
 ;; Define data variables
 (define-data-var total-tokens uint u0) ;; Total supply of ICO tokens
-(define-data-var user-balances (map principal uint) (map principal uint)) ;; Map of addresses to their token balances
+(define-data-var user-balances (map principal uint) {}) ;; Map of addresses to their token balances
 (define-data-var contract-owner principal tx-sender) ;; Owner of the ICO contract
 (define-data-var sale-end-time uint (+ block-height SALE_DURATION)) ;; End time of the ICO
 
