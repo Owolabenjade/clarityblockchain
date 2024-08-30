@@ -4,6 +4,11 @@
 (define-data-var duration uint u0)
 (define-data-var total-claimed uint u0)
 
+;; Custom max function
+(define-read-only (max (a uint) (b uint))
+  (if (> a b) a b)
+)
+
 (define-public (initialize (beneficiary principal) (vesting-amount uint) (vesting-duration uint))
   (begin
     ;; Ensure the contract is not initialized twice
