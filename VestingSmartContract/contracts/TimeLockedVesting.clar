@@ -63,11 +63,10 @@
     ;; Ensure there is something to claim
     (asserts! (> claimable u0) (err u103))
     ;; Transfer the claimable amount to the recipient
-    (try!
-      (stx-transfer? claimable tx-sender current-recipient)
-      (var-set total-claimed (+ (var-get total-claimed) claimable))
-      (print (tuple (event "claimed") (amount claimable)))
-      (ok claimable)
-    )
+    (try! (stx-transfer? claimable tx-sender current-recipient))
+    ;; Update the claimed amount if the transfer was successful
+    (var-set total-claimed (+ (var-get total-claimed) claimable))
+    (print (tuple (event "claimed") (amount claimable)))
+    (ok claimable)
   )
 )
