@@ -5,12 +5,12 @@
 
 ;; Define data variables
 (define-data-var total-tokens uint u0) ;; Total supply of ICO tokens
-(define-data-var user-balances (map principal uint)) ;; Map of addresses to their token balances
+(define-data-var user-balances (map principal uint) (map)) ;; Correctly initialize the map
 (define-data-var contract-owner principal tx-sender) ;; Owner of the ICO contract
 (define-data-var sale-end-time uint (+ block-height SALE_DURATION)) ;; End time of the ICO
 
 ;; Define a public function to buy tokens
-(define-public (purchase-tokens (token-amount uint))
+(define-public (purchase-ttokens (token-amount uint))
   (let ((total-cost (* token-amount TOKEN_COST)))
     (if (<= block-height (var-get sale-end-time))
         (if (is-ok (stx-transfer? total-cost tx-sender (var-get contract-owner)))
