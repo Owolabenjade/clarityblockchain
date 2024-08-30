@@ -4,19 +4,19 @@
 (define-data-var duration uint u0)
 (define-data-var total-claimed uint u0)
 
-(define-public (initialize (recipient principal) (total-vested uint) (duration uint))
+(define-public (initialize (beneficiary principal) (vesting-amount uint) (vesting-duration uint))
   (begin
     ;; Ensure the contract is not initialized twice
     (asserts! (is-none (var-get recipient)) (err u100))
     ;; Ensure valid input parameters
-    (asserts! (> total-vested u0) (err u104))
-    (asserts! (> duration u0) (err u105))
+    (asserts! (> vesting-amount u0) (err u104))
+    (asserts! (> vesting-duration u0) (err u105))
     ;; Set the recipient, total vested amount, and duration
-    (var-set recipient (some recipient))
-    (var-set total-vested total-vested)
-    (var-set duration duration)
-    (var-set start-block (block-height))
-    (ok (tuple (recipient recipient) (total-vested total-vested) (duration duration)))
+    (var-set recipient (some beneficiary))
+    (var-set total-vested vesting-amount)
+    (var-set duration vesting-duration)
+    (var-set start-block block-height)
+    (ok (tuple (recipient beneficiary) (total-vested vesting-amount) (duration vesting-duration)))
   )
 )
 
@@ -26,11 +26,11 @@
       (initial-block (var-get start-block))
       (vesting-period (var-get duration))
       (amount-vested (var-get total-vested))
-      (elapsed-time (- (block-height) initial-block))
+      (elapsed-time (max u0 (- block-height initial-block)))
     )
     ;; Calculate the vested amount based on time passed
     (if (< elapsed-time vesting-period)
-        (* amount-vested (/ elapsed-time vesting-period))
+        (unwrap-panic (uint-div (uint-mul amount-vested elapsed-time) vesting-period))
         amount-vested
     )
   )
@@ -39,11 +39,11 @@
 (define-read-only (calculate-claimable)
   (let
     (
-      (vested (unwrap-panic (calculate-vested)))
+      (vested (calculate-vested))
       (already-claimed (var-get total-claimed))
     )
     ;; Calculate the claimable amount by subtracting already claimed tokens
-    (ok (max u0 (- vested already-claimed)))
+    (ok (uint-sub vested already-claimed))
   )
 )
 
@@ -60,7 +60,7 @@
     ;; Transfer the claimable amount to the recipient
     (begin
       (stx-transfer? claimable tx-sender)
-      (var-set total-claimed (+ (var-get total-claimed) claimable))
+      (var-set total-claimed (uint-add (var-get total-claimed) claimable))
       (print (tuple (event "claimed") (amount claimable)))
       (ok claimable)
     )
