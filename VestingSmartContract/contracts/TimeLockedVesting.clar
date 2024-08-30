@@ -64,7 +64,8 @@
     (asserts! (> claimable u0) (err u103))
     ;; Transfer the claimable amount to the recipient
     (begin
-      (stx-transfer? claimable tx-sender)
+      ;; Transfer the claimable STX to the recipient from the contract itself
+      (stx-transfer? claimable tx-sender current-recipient)
       (var-set total-claimed (+ (var-get total-claimed) claimable))
       (print (tuple (event "claimed") (amount claimable)))
       (ok claimable)
